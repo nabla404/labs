@@ -75,8 +75,8 @@ void printArray(int arr[], int size) {
 }
 
 // 3
-const int N = 10;
-const int M = 15;
+const int N = 15;
+const int M = 20;
 void print_board(char board[][M], int N, int M){
     for (int i=0; i<N; i++){
         for (int j=0; j<M; j++){
@@ -95,21 +95,20 @@ void randomize_board(char board[][M], int N, int M){
     }
 }
 
-int step_calc(int steps[][M], char board[][M], int N, int M, int i, int j, int depth){
-    if (board[i][j] == 'E') return 0;
+void step_calc(int steps[][M], char board[][M], int N, int M, int i, int j, int depth){
+    if (board[i][j] == 'E') return;
     if (j - 1 >= 0 && steps[i][j-1] > depth + 1 && board[i][j-1] != '#') {steps[i][j-1] = depth + 1; step_calc(steps, board, N, M, i, j-1, depth + 1);}
-    if (j + 1 <= M && steps[i][j+1] > depth + 1 && board[i][j+1] != '#') {steps[i][j+1] = depth + 1; step_calc(steps, board, N, M, i, j+1, depth + 1);}
+    if (j + 1 < M && steps[i][j+1] > depth + 1 && board[i][j+1] != '#') {steps[i][j+1] = depth + 1; step_calc(steps, board, N, M, i, j+1, depth + 1);}
     if (i-1 >= 0) {
         if (steps[i-1][j] > depth + 1 && board[i-1][j] != '#') {steps[i-1][j] = depth + 1; step_calc(steps, board, N, M, i-1, j, depth + 1);}
         if (j - 1 >= 0 && board[i-1][j-1] != '#' && steps[i-1][j-1] > depth + 1) {steps[i-1][j-1] = depth + 1; step_calc(steps, board, N, M, i-1, j-1, depth + 1);}
-        if (j + 1 <= M && board[i-1][j+1] != '#' && steps[i-1][j+1] > depth + 1) {steps[i-1][j+1] = depth + 1; step_calc(steps, board, N, M, i-1, j+1, depth + 1);}
+        if (j + 1 < M && board[i-1][j+1] != '#' && steps[i-1][j+1] > depth + 1) {steps[i-1][j+1] = depth + 1; step_calc(steps, board, N, M, i-1, j+1, depth + 1);}
     }
-    if (i+1 <= N) {
+    if (i+1 < N) {
         if (steps[i+1][j] > depth + 1 && board[i+1][j] != '#') {steps[i+1][j] = depth + 1; step_calc(steps, board, N, M, i+1, j, depth + 1);}
         if (j - 1 >= 0 && board[i+1][j-1] != '#' && steps[i+1][j-1] > depth + 1) {steps[i+1][j-1] = depth + 1; step_calc(steps, board, N, M, i+1, j-1, depth + 1);}
-        if (j + 1 <= M && board[i+1][j+1] != '#' && steps[i+1][j+1] > depth + 1) {steps[i+1][j+1] = depth + 1; step_calc(steps, board, N, M, i+1, j+1, depth + 1);}
+        if (j + 1 < M && board[i+1][j+1] != '#' && steps[i+1][j+1] > depth + 1) {steps[i+1][j+1] = depth + 1; step_calc(steps, board, N, M, i+1, j+1, depth + 1);}
     }
-    return depth;
 }
 
 // int arr[10'000'000];
@@ -134,19 +133,36 @@ int main(){
     {'.', '.', '.', '.', '.'}, 
     {'.', '.', '.', '.', 'E'}, 
     };
+
+    // char board[N][M] = {
+    // {'.', '#', '.', '#', '#'}, 
+    // {'.', '#', '.', '#', 'E'}, 
+    // {'#', '.', '#', '#', '#'}, 
+    // {'.', '#', '#', '.', '.'}, 
+    // {'.', '#', 'S', '#', '#'}, 
+    // };
+    // int S[2] = {4, 2};
+    // int E[2] = {1, 4};
+
     // int S[2] = {0, 0};
     // int E[2] = {N-1, M-1};
     randomize_board(board, N, M);
     int S[2] = {rand() % N,rand() % M};
     int E[2] = {rand() % N,rand() % M};
-    while (S[0] == E[0] && S[1] == E[1]) {rand() % N,rand() % M;}
+    while (S[0] == E[0] && S[1] == E[1]) {E[0] = rand() % N, E[1]  = rand() % M;}
     board[S[0]][S[1]] = 'S';
     board[E[0]][E[1]] = 'E';
     steps[S[0]][S[1]] = 0;
     print_board(board, N, M);
 
-    int _steps = step_calc(steps, board, N, M, S[0], S[1], 0);
+    step_calc(steps, board, N, M, S[0], S[1], 0);
     std::cout << "steps " << (steps[E[0]][E[1]] == INT_MAX/2 ? -1 : steps[E[0]][E[1]]) << std::endl;
+    // for (int i=0; i<N; i++){
+    //     for (int j=0; j<M; j++){
+    //         std::cout << steps[i][j] << ' ';
+    //     }
+    //     std::cout << std::endl;
+    // }
 
 
     return 0;
